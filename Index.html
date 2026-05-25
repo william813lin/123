@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Sourcing Intelligence 競賽簡報</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ==========================================================================
+           全域樣式與 Cyberpunk 電競感色彩系統
+           ========================================================================== */
+        :root {
+            --bg-deep: #020617;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --cyan: #22D3EE;
+            --purple: #A855F7;
+            --emerald: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text-main: #F1F5F9;
+            --text-dim: #94A3B8;
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(34, 211, 238, 0.15);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+            padding: 40px 0;
+        }
+
+        /* 統一簡報標準 16:9 尺寸 (1280x720) */
+        .slide {
+            width: 1280px;
+            height: 720px;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Urbanist', 'Noto Sans TC', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 70px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7), 0 0 40px var(--glow);
+        }
+
+        /* 背景流動光暈裝飾 */
+        .slide::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 75%);
+            top: -150px;
+            right: -150px;
+            z-index: 0;
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.08) 0%, transparent 75%);
+            bottom: -250px;
+            left: -250px;
+            z-index: 0;
+        }
+
+        .slide > * { 
+            position: relative; 
+            z-index: 1; 
+        }
+
+        /* 統一標題樣式 */
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 35px;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            border-left: 6px solid var(--purple);
+            padding-left: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-title span.subtitle {
+            font-size: 16px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .content-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 玻璃擬態卡片樣式 */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* ==========================================================================
+           第一頁：金字塔價值模型佈局
+           ========================================================================== */
+        .pyramid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .pyramid-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pyramid-tier {
+            width: 100%;
+            padding: 22px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 1px;
+            clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .pyramid-tier:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2);
+        }
+
+        .tier-top { width: 50%; background: linear-gradient(90deg, var(--purple), #C084FC); color: #fff; }
+        .tier-mid { width: 78%; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--purple); color: #E9D5FF; }
+        .tier-bot { width: 100%; background: rgba(34, 211, 238, 0.08); border: 1px solid var(--cyan); color: #E0F2FE; }
+
+        .value-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .value-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .value-icon {
+            font-size: 24px;
+            color: var(--cyan);
+            background: rgba(34, 211, 238, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        /* ==========================================================================
+           第二頁：廠商評估表格佈局
+           ========================================================================== */
+        .matrix-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            margin-top: -10px;
+        }
+
+        .matrix-table th {
+            padding: 15px 20px;
+            color: var(--cyan);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        .matrix-table td {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+        }
+
+        .matrix-table tr td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; font-weight: bold; color: var(--cyan); }
+        .matrix-table tr td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-good { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid var(--emerald); }
+        .status-alert { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .status-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+        /* ==========================================================================
+           第三頁：AI即時助手（時事與策略）佈局
+           ========================================================================== */
+        .assistant-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 40px;
+        }
+
+        .news-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .news-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--warning);
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+
+        .news-card.danger-alert { border-left-color: var(--danger); }
+        .news-card.m-a-alert { border-left-color: var(--purple); }
+
+        .news-icon { font-size: 24px; margin-top: 3px; }
+        .news-card.danger-alert .news-icon { color: var(--danger); }
+        .news-card.m-a-alert .news-icon { color: var(--purple); }
+
+        .alert-tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .danger-alert .alert-tag { background: var(--danger); }
+        .m-a-alert .alert-tag { background: var(--purple); }
+
+        /* AI 策略面板 */
+        .ai-copilot-panel {
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(168, 85, 247, 0.05));
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
+        }
+
+        .strategy-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .strategy-list li {
+            font-size: 14px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.2);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--emerald);
+        }
+
+        /* ==========================================================================
+           第四頁：360°廠商儀表板與雷達圖佈局
+           ========================================================================== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 40px;
+        }
+
+        /* 擬真雷達圖組件 */
+        .radar-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .radar-chart-mock {
+            width: 280px;
+            height: 280px;
+            border: 1px dashed rgba(34, 211, 238, 0.2);
+            border-radius: 50%;
+            margin: 30px auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 75%);
+        }
+
+        .radar-net-2 {
+            position: absolute;
+            top: 15%; left: 15%; width: 70%; height: 70%;
+            border: 1px dashed rgba(34, 211, 238, 0.15);
+            border-radius: 50%;
+        }
+
+        .radar-poly {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: rgba(168, 85, 247, 0.25);
+            border: 2px solid var(--purple);
+            clip-path: polygon(50% 15%, 85% 42%, 75% 80%, 25% 75%, 20% 38%);
+        }
+
+        .radar-label {
+            position: absolute;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* 數據指標卡片區 */
+        .financial-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mini-metric-card {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        /* 頁腳樣式 */
+        .slide-footer {
+            position: absolute;
+            bottom: 25px;
+            left: 70px;
+            right: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide" id="value-proposition">
+        <div class="slide-title">
+            <h2>AI 賦能：創造多層級採購價值</h2>
+            <span class="subtitle">VALUE PROPOSITION</span>
+        </div>
+        <div class="content-container">
+            <div class="pyramid-layout">
+                <div class="pyramid-visual">
+                    <div class="pyramid-tier tier-top"><i class="fa-solid fa-chess"></i> 戰略層 (STRATEGIC)</div>
+                    <div class="pyramid-tier tier-mid"><i class="fa-solid fa-shield-halved"></i> 執行層 (EXECUTION)</div>
+                    <div class="pyramid-tier tier-bot"><i class="fa-solid fa-gears"></i> 運作層 (OPERATIONAL)</div>
+                    <p style="margin-top: 15px; font-size: 13px; color: var(--text-dim); letter-spacing: 1px;">▲ 採購決策成熟度模型</p>
+                </div>
+                <div class="glass-card">
+                    <div class="value-list">
+                        <div class="value-item">
+                            <div class="value-icon"><i class="fa-solid fa-brain"></i></div>
+                            <div>
+                                <h4 style="color: var(--cyan); margin-bottom: 4px; font-size: 16px;">解密策略盲點 (Strategic Impact)</h4>
+                                <p style="font-size: 13.5px; color: var(--text-dim); line-height: 1.5;">追蹤新技術紅利（如 GAA/HBM），將技術延遲與試錯成本轉嫁給設備商，透過共同開發協議（JDP）鎖定首发優勢。</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-icon"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <h4 style="color: var(--cyan); margin-bottom: 4px; font-size: 16px;">防禦性產能與維運保障 (Execution Control)</h4>
+                                <p style="font-size: 13.5px; color: var(--text-dim); line-height: 1.5;">全時監測供應商財報健全度，遭遇風險時自動觸發「二階供應鏈 VMI 零件前置倉」與工程量能鎖定合約。</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <div>
+                                <h4 style="color: var(--cyan); margin-bottom: 4px; font-size: 16px;">自動化降本提效 (Operational Efficiency)</h4>
+                                <p style="font-size: 13.5px; color: var(--text-dim); line-height: 1.5;">15秒內自動精煉財報、法說會與電話會議逐字稿，精確捕捉交期與庫存去化壓力窗口，取代傳統長達兩週的人工研判。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>SEMICONDUCTOR AI-SOURCING PROJECT</span>
+            <span>SLIDE 01</span>
+        </div>
+    </div>
+
+
+    <div class="slide" id="architecture-matrix">
+        <div class="slide-title">
+            <h2>系統架構：供應商智能評價矩陣</h2>
+            <span class="subtitle">INTELLIGENCE MATRIX</span>
+        </div>
+        <div class="content-container">
+            <div class="glass-card" style="padding: 10px 20px;">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>核心模組項目</th>
+                            <th>監測供應商</th>
+                            <th>AI 關鍵監測指標 (Financial & Market)</th>
+                            <th>戰略權重</th>
+                            <th>當前供應商風險狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>技術獨佔力分析</td>
+                            <td>ASML (曝光機)</td>
+                            <td>EUV 下一代機台 (High-NA) 訂單積壓與毛利率趨勢</td>
+                            <td>35%</td>
+                            <td><span class="status-badge status-good"><i class="fa-solid fa-circle-check"></i> 安全 (技術絕對壟斷)</span></td>
+                        </tr>
+                        <tr>
+                            <td>異質整合佈局</td>
+                            <td>AMAT (薄膜/PVD)</td>
+                            <td>GAA 產品線與先進封裝設備 (NEXX) 營收佔比</td>
+                            <td>25%</td>
+                            <td><span class="status-badge status-alert"><i class="fa-solid fa-triangle-exclamation"></i> 中風險 (受地緣政治波動)</span></td>
+                        </tr>
+                        <tr>
+                            <td>維運服務依賴度</td>
+                            <td>Lam Research (蝕刻)</td>
+                            <td>CSBG 客戶支援部門獲利表現與備件庫存率</td>
+                            <td>20%</td>
+                            <td><span class="status-badge status-danger"><i class="fa-solid fa-circle-xmark"></i> 高警示 (NAND 庫存壓力)</span></td>
+                        </tr>
+                        <tr>
+                            <td>研發投資轉化率</td>
+                            <td>TEL / KLA</td>
+                            <td>R&D 支出對總營收佔比與專利產出速度</td>
+                            <td>20%</td>
+                            <td><span class="status-badge status-good"><i class="fa-solid fa-circle-check"></i> 穩定 (研發動能持續)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>SEMICONDUCTOR AI-SOURCING PROJECT</span>
+            <span>SLIDE 02</span>
+        </div>
+    </div>
+
+
+    <div class="slide" id="ai-assistant-news">
+        <div class="slide-title">
+            <h2>AI 即時戰略助手：地緣政治與市場突發事件因應</h2>
+            <span class="subtitle">REAL-TIME COPILOT</span>
+        </div>
+        <div class="content-container">
+            <div class="assistant-grid">
+                <div class="news-stream">
+                    <h3 style="font-size: 16px; color: var(--text-dim); font-weight: 500; margin-bottom: 5px;"><i class="fa-solid fa-satellite-dish"></i> 2026 即時突發情報串流 (Real-time Feed)</h3>
+                    
+                    <div class="news-card danger-alert">
+                        <div class="news-icon"><i class="fa-solid fa-flag-usa"></i></div>
+                        <div>
+                            <span class="alert-tag">禁令預警</span>
+                            <h4 style="font-size: 15px; color: #fff; margin: 3px 0;">美方考慮全面收緊 14nm 以下關鍵設備維修與售後支援</h4>
+                            <p style="font-size: 12.5px; color: var(--text-dim); margin-top: 4px;">禁令可能限制美籍工程師為特定地區提供現場技術服務，直接衝擊 AMAT 與 Lam Research 駐廠量能。</p>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-icon" style="color: var(--warning);"><i class="fa-solid fa-mountain"></i></div>
+                        <div>
+                            <span class="alert-tag" style="background: var(--warning);">出口管制</span>
+                            <h4 style="font-size: 15px; color: #fff; margin: 3px 0;">關鍵稀土磁鐵加工設備列入管制，全球機台馬達面臨漲價</h4>
+                            <p style="font-size: 12.5px; color: var(--text-dim); margin-top: 4px;">高性能永磁材料出口受限，預估次世代蝕刻機、沉積機的關鍵伺服馬達製造點成本將上推 10% ~ 15%。</p>
+                        </div>
+                    </div>
+
+                    <div class="news-card m-a-alert">
+                        <div class="news-icon"><i class="fa-solid fa-handshake"></i></div>
+                        <div>
+                            <span class="alert-tag">產業併購</span>
+                            <h4 style="font-size: 15px; color: #fff; margin: 3px 0;">Applied Materials (AMAT) 宣佈完成對日本精密材料商收購</h4>
+                            <p style="font-size: 12.5px; color: var(--text-dim); margin-top: 4px;">併購將強化其在整合性薄膜沉積（Advanced Metal Fill）的壟斷地位，未來單機議價門檻將大幅提高。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card ai-copilot-panel">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                        <i class="fa-solid fa-robot" style="font-size: 28px; color: var(--purple);"></i>
+                        <div>
+                            <h3 style="font-size: 18px; color: #fff;">AI 戰略決策自動產出</h3>
+                            <p style="font-size: 12px; color: var(--purple); font-weight: bold;">Risk Mitigation Copilot</p>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 13.5px; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                        系統已自動關聯上述事件，為採購團隊生成以下防禦與議價指令：
+                    </p>
+
+                    <ul class="strategy-list">
+                        <li>
+                            <strong style="color: var(--cyan);">【服務合約重組】</strong><br>
+                            應在設備維修禁令生效前，談判要求供應商將合約主體與技術支援轉移至台灣或新加坡法人，並要求在本地建立「高階資深非美籍工程師專隊」。
+                        </li>
+                        <li>
+                            <strong style="color: var(--cyan);">【價格凍結抗通膨】</strong><br>
+                            稀土管制引發的成本劇震，採購部應立即對已進入談判中後期的蝕刻機台簽署「馬達組件價格凍結條款」，規避 Q4 設備商成本轉嫁。
+                        </li>
+                        <li>
+                            <strong style="color: var(--cyan);">【反向打包談判】</strong><br>
+                            利用 AMAT 剛完成併購、急於向市場展示整合營效（Synergy）的財報壓力，反向提出「薄膜設備 + 封裝材料」跨部門長約包裹（Bundling），以此突破單機議價僵局。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>SEMICONDUCTOR AI-SOURCING PROJECT</span>
+            <span>SLIDE 03</span>
+        </div>
+    </div>
+
+
+    <div class="slide" id="vendor-dashboard">
+        <div class="slide-title">
+            <h2>智能透視：供應商 360° 健康與競爭力儀表板</h2>
+            <span class="subtitle">VENDOR INSIGHT (CASE: AMAT)</span>
+        </div>
+        <div class="content-container">
+            <div class="dashboard-grid">
+                <div class="glass-card radar-box">
+                    <h3 style="font-size: 16px; color: var(--cyan);">AMAT 競爭力雷達指標</h3>
+                    
+                    <div class="radar-chart-mock">
+                        <div class="radar-net-2"></div>
+                        <div class="radar-poly"></div>
+                        
+                        <div class="radar-label" style="top: -20px; left: 36%; color: var(--cyan); font-weight: bold;">財務健康度</div>
+                        <div class="radar-label" style="top: 38%; right: -35px;">技術創新力</div>
+                        <div class="radar-label" style="bottom: -20px; right: 15%;">產能彈性</div>
+                        <div class="radar-label" style="bottom: -20px; left: 15%;">價格競爭力</div>
+                        <div class="radar-label" style="top: 38%; left: -35px;">售後量能</div>
+                    </div>
+                    
+                    <p style="font-size: 13px; color: var(--text-dim);">當前評估總得分：<strong style="color: var(--purple); font-size: 18px;">88.4</strong> / 100</p>
+                </div>
+
+                <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="font-size: 16px; color: var(--purple); margin-bottom: 15px;"><i class="fa-solid fa-chart-pie"></i> 財報關鍵指標即時診斷</h3>
+                        <div class="financial-summary">
+                            <div class="mini-metric-card">
+                                <p style="font-size: 12px; color: var(--text-dim);">毛利率走勢 (Gross Margin)</p>
+                                <h4 style="color: var(--emerald); font-size: 20px; margin-top: 5px;">47.2% <span style="font-size: 12px;"><i class="fa-solid fa-arrow-trend-up"></i> +2.4%</span></h4>
+                                <p style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">先進封裝高毛利機台出貨增溫</p>
+                            </div>
+                            <div class="mini-metric-card">
+                                <p style="font-size: 12px; color: var(--text-dim);">存貨周轉天數 (DIO)</p>
+                                <h4 style="color: var(--danger); font-size: 20px; margin-top: 5px;">102 天 <span style="font-size: 12px;"><i class="fa-solid fa-circle-exclamation"></i> 偏高</span></h4>
+                                <p style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">成熟製程機台去化放緩，議價空間浮現</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.2); padding: 18px; border-radius: 10px; border-left: 4px solid var(--purple);">
+                        <h4 style="font-size: 14px; color: var(--cyan); margin-bottom: 6px;"><i class="fa-solid fa-quote-left"></i> Conference Call 逐字稿 AI 語意解讀</h4>
+                        <p style="font-size: 13px; font-style: italic; color: #cbd5e1; line-height: 1.5;">
+                            「管理層在法說會中提及：雖然邏輯客戶支出拉回，但 HBM 封裝設備的供貨瓶頸已完全解決，預計下半年相關產能可再擴充 30%。」
+                        </p>
+                        <div style="margin-top: 10px; font-size: 13px; color: var(--emerald); font-weight: 500;">
+                            <i class="fa-solid fa-lightbulb"></i> <strong>採購切入點：</strong> 藉由其 HBM 產能釋放、且急於填補邏輯製程缺口的心理，當前是要求縮短先进封裝機台交期與談判折扣的最佳對談窗口。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer">
+            <span>SEMICONDUCTOR AI-SOURCING PROJECT</span>
+            <span>SLIDE 04</span>
+        </div>
+    </div>
+
+</body>
+</html>
